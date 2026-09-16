@@ -1,0 +1,24 @@
+# 실행 로그 — 로컬 절대 경로(/Users/<이름>/…)와 서버 접속 기록이 남는다
+start.log
+*.log
+
+# start.command 가 python3 없을 때 즉석 생성하는 노드 서버
+.serve.mjs
+
+# OS / 에디터 잡파일
+.DS_Store
+Thumbs.db
+*~
+.vscode/
+.idea/
+
+# Claude Code 로컬 설정
+.claude/
+
+# 더 이상 쓰지 않는 에셋 (로컬에는 남겨두고 저장소에는 올리지 않음)
+assets/glb_mallowbot_8k_huniyuan.glb
+assets/mallowbot_center_img.png
+
+# 이전 눈 버전 백업 zip
+backup_snow_*.zip
+snow.zip
