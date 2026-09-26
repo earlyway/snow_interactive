@@ -1,7 +1,7 @@
 #!/bin/bash
-# Hot Chocolate Rain 런처 — 더블클릭 한 번으로 로컬 서버를 띄우고 Chrome 에서 autostart 모드로 엽니다.
-#   · 핫초코가 조금 고인 상태로 시작 (?autostart=1&level=0.8)
-#   · 카메라 권한을 바로 요청 → 손을 내밀면 방울과 고인 핫초코가 손으로 빨려 들어갑니다
+# Marshmallow Pile 런처 — 더블클릭 한 번으로 로컬 서버를 띄우고 Chrome 에서 autostart 모드로 엽니다.
+#   · 마시멜로가 쌓인 상태로 시작 (?autostart=1&level=3)
+#   · 카메라 권한을 바로 요청 → 손을 내밀면 마시멜로가 출렁이고 멜로우봇을 밀 수 있습니다
 #   · 이 창을 닫거나 Ctrl+C 를 누르면 서버가 종료됩니다
 #   · 문제가 생기면 같은 폴더의 start.log 를 확인하세요
 set -u
@@ -11,7 +11,7 @@ LOG="$DIR/start.log"
 exec > >(tee -a "$LOG") 2>&1
 echo "=== $(date '+%F %T') 시작 ($DIR) ==="
 
-LEVEL="${LEVEL:-0.8}"        # 시작 시 고여 있을 핫초코 수위 (월드 단위, 화면 높이 = 10)
+LEVEL="${LEVEL:-3}"          # 시작 시 마시멜로 높이 (월드 단위, 화면 높이 = 10)
 PORT="${PORT:-5173}"
 export PATH="/opt/homebrew/bin:/usr/local/bin:$PATH"
 
@@ -76,7 +76,7 @@ done
 URL="http://localhost:$PORT/?autostart=1&level=$LEVEL"
 echo
 echo "✅ Hot Chocolate Rain  →  $URL"
-echo "   손을 카메라 앞에 내밀면 핫초코가 손으로 빨려 들어가고, 떠 있는 멜로우봇을 밀 수 있어요."
+echo "   손을 카메라 앞에 내밀면 마시멜로가 출렁이고, 떠 있는 멜로우봇을 밀 수 있어요."
 echo "   종료: Ctrl+C 또는 이 창 닫기"
 echo
 

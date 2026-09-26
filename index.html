@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Hot Chocolate Rain — 카메라 인터랙티브 파티클</title>
+<title>Marshmallow Pile — 카메라 인터랙티브</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500&display=swap" rel="stylesheet">
 <style>
@@ -87,8 +87,8 @@ body.dragging #drop{background:rgba(240,178,122,.14);border-color:var(--ice);col
 <button id="toggle" aria-controls="panel" aria-expanded="false">설정</button>
 
 <aside id="panel" aria-label="설정 패널">
-  <h1>Hot Chocolate Rain</h1>
-  <p class="lede">핫초코 비가 내려 화면 아래에 차오르고, 멜로우봇이 튜브처럼 수면에 떠오릅니다. 카메라 앞에 손을 내밀면 방울과 고인 핫초코가 손으로 빨려 들어가고, 멜로우봇을 손으로 눌러 밀 수 있어요. 이미지를 올리면 그 모양으로 내립니다.</p>
+  <h1>Marshmallow Pile</h1>
+  <p class="lede">화면 아래에 마시멜로가 쌓여 있고, 멜로우봇이 그 위에 튜브처럼 떠 있습니다. 카메라 앞에 손을 내밀어 마시멜로를 누르면 젤리처럼 출렁이고, 멜로우봇을 손으로 밀거나 눌러 굴릴 수 있어요. 높이는 슬라이더로 조절합니다.</p>
 
   <details open>
     <summary>카메라 &amp; 인식</summary>
@@ -97,24 +97,30 @@ body.dragging #drop{background:rgba(240,178,122,.14);border-color:var(--ice);col
     <div id="debugPane" hidden></div>
   </details>
 
+  <details open>
+    <summary>마시멜로 (하단 레이어)</summary>
+    <div class="tiers" style="grid-template-columns:1fr 1fr;margin:6px 0 10px">
+      <label><input type="radio" name="pileMode" value="3d" checked><span>2.5D 마시멜로<br>3D 인스턴스 · 조명</span></label>
+      <label><input type="radio" name="pileMode" value="2d"><span>2D 이미지<br>텍스처 평면</span></label>
+    </div>
+    <div id="lSliders"></div>
+    <div class="row inline" style="margin-top:6px"><label>2D 이미지</label><span id="pileName" style="font-size:12px;color:var(--slate);text-align:right">불러오는 중…</span></div>
+    <div class="btns" style="margin-top:6px"><button class="btn" id="pilePick" type="button">마시멜로 이미지 바꾸기 (PNG 투명 배경)</button><input type="file" id="pileFile" accept="image/png,image/jpeg,image/webp" style="display:none"></div>
+  </details>
+
   <details>
-    <summary>비 (방울)</summary>
+    <summary>손 · 멜로우봇</summary>
+    <label class="check"><input type="checkbox" id="showMascot" checked> 멜로우봇 보이기 (마시멜로가 높아지면 떠올라요)</label>
+    <div id="iSliders"></div>
+  </details>
+
+  <details>
+    <summary>비 (선택 · 기본 꺼짐)</summary>
     <div id="pSliders"></div>
   </details>
 
   <details>
-    <summary>핫초코 (하단 액체)</summary>
-    <div id="lSliders"></div>
-  </details>
-
-  <details>
-    <summary>손 흡입 · 멜로우봇</summary>
-    <label class="check"><input type="checkbox" id="showMascot" checked> 멜로우봇 보이기 (핫초코가 차오르면 떠올라요)</label>
-    <div id="iSliders"></div>
-  </details>
-
-  <details open>
-    <summary>커스텀 에셋</summary>
+    <summary>커스텀 비 에셋</summary>
     <div class="tiers">
       <label><input type="radio" name="tier" value="1" checked><span>티어 1<br>빌보드</span></label>
       <label><input type="radio" name="tier" value="2"><span>티어 2<br>압출</span></label>
@@ -138,10 +144,10 @@ body.dragging #drop{background:rgba(240,178,122,.14);border-color:var(--ice);col
   </details>
 
   <div class="btns" style="margin-top:18px">
-    <button class="btn" id="reset">핫초코 비우기</button>
-    <button class="btn" id="fillBtn">핫초코 채우기</button>
+    <button class="btn" id="reset">마시멜로 치우기</button>
+    <button class="btn" id="fillBtn">마시멜로 쌓기</button>
   </div>
-  <p class="foot">카메라 영상은 이 브라우저 안에서만 처리되며 어디로도 전송되지 않습니다. 카메라 권한이 없으면 마우스 커서가 손 대신 핫초코를 빨아들입니다.</p>
+  <p class="foot">카메라 영상은 이 브라우저 안에서만 처리되며 어디로도 전송되지 않습니다. 카메라 권한이 없으면 마우스 커서가 손 역할을 합니다.</p>
 </aside>
 <div class="toast" id="toast"></div>
 

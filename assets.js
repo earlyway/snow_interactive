@@ -304,3 +304,42 @@ export function disposeAsset(a) {
   const mats = Array.isArray(a.material) ? a.material : [a.material];
   for (const m of mats) { m?.map?.dispose?.(); m?.dispose?.(); }
 }
+
+// ---------- 기본 마시멜로 텍스처 (assets/marshmallow.png 가 없을 때 대체) ----------
+// 투명 배경 위에 둥근 원기둥 마시멜로 몇 개를 쌓은 1024x1024 캔버스. 아래쪽은 꽉 채워 바닥 틈이 보이지 않게 한다.
+export function makeDefaultPileTexture() {
+  const S = 1024, c = document.createElement('canvas'); c.width = c.height = S;
+  const g = c.getContext('2d');
+  const mallow = (x, y, w, h, rot, tint) => {
+    g.save(); g.translate(x, y); g.rotate(rot);
+    const r = Math.min(w, h) * 0.32;
+    const grad = g.createLinearGradient(-w / 2, -h / 2, w / 2, h / 2);
+    grad.addColorStop(0, '#fffdf8'); grad.addColorStop(0.55, tint); grad.addColorStop(1, '#e6d9c8');
+    g.shadowColor = 'rgba(60,30,10,.28)'; g.shadowBlur = 24; g.shadowOffsetY = 10;
+    g.fillStyle = grad; g.beginPath(); g.roundRect(-w / 2, -h / 2, w, h, r); g.fill();
+    g.shadowColor = 'transparent';
+    // 앞면(끝단) 타원 — 살짝 어두운 크림색
+    g.fillStyle = 'rgba(240,228,212,.85)'; g.beginPath(); g.ellipse(-w * 0.22, 0, w * 0.2, h * 0.42, 0, 0, 6.283); g.fill();
+    // 가루 설탕 질감
+    g.globalAlpha = 0.22; g.fillStyle = '#ffffff';
+    for (let i = 0; i < 90; i++) { const px = (Math.random() - 0.5) * w * 0.9, py = (Math.random() - 0.5) * h * 0.85; g.fillRect(px, py, 2 + Math.random() * 3, 2 + Math.random() * 3); }
+    g.globalAlpha = 1; g.restore();
+  };
+  // 아래줄 (꽉 채움) → 중간줄 → 윗줄 (봉긋한 실루엣)
+  const rows = [
+    { y: S * 0.86, n: 4, w: 300, h: 240, jitter: 10 },
+    { y: S * 0.62, n: 3, w: 290, h: 230, jitter: 26 },
+    { y: S * 0.40, n: 2, w: 280, h: 220, jitter: 30 }
+  ];
+  const tints = ['#f7efe4', '#f3e9dc', '#faf3ea'];
+  rows.forEach((row, ri) => {
+    for (let i = 0; i < row.n; i++) {
+      const x = ((i + 0.5) / row.n) * S + (Math.random() - 0.5) * row.jitter * 2;
+      const y = row.y + (Math.random() - 0.5) * row.jitter;
+      mallow(x, y, row.w, row.h, (Math.random() - 0.5) * (0.15 + ri * 0.2), tints[(i + ri) % 3]);
+    }
+  });
+  const tex = new THREE.CanvasTexture(c);
+  tex.colorSpace = THREE.SRGBColorSpace;
+  return tex;
+}

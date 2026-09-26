@@ -1,6 +1,6 @@
 // 입력 레이어 — 카메라/랜드마크/마우스 → Interactor { source, kind, x, y, vx, vy, radius, strength }
 // 시뮬은 Interactor 배열만 받는다. 손·눈·마우스 구분은 여기서 끝난다.
-//   손/마우스 → kind 'suck' (핫초코 흡입 + 멜로우봇 밀기)
+//   손/마우스 → kind 'hand' (마시멜로 누르기 + 멜로우봇 밀기)
 import { FilesetResolver, HandLandmarker } from '@mediapipe/tasks-vision';
 
 const WASM = 'https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision@0.10.14/wasm';
@@ -29,7 +29,7 @@ export class InputLayer {
       let vx = 0, vy = 0;
       if (last) { const dt = Math.max((t - last.t) / 1000, 1e-3); vx = (x - last.x) / dt; vy = (y - last.y) / dt; }
       last = { x, y, t };
-      this.mouse = { source: 'mouse', kind: 'suck', x, y, vx, vy, radius: this.P.suckRadius, strength: 1, t };
+      this.mouse = { source: 'mouse', kind: 'hand', x, y, vx, vy, radius: this.P.handRadius, strength: 1, t };
     };
     el.addEventListener('pointermove', move);
     el.addEventListener('pointerdown', move);
@@ -49,7 +49,7 @@ export class InputLayer {
     } catch (e) {
       console.warn(e);
       this.state = 'denied';
-      this.onStatus?.('카메라 없이 마우스로 빨아들이기', 'warn');
+      this.onStatus?.('카메라 없이 마우스로 조작', 'warn');
     }
   }
 
@@ -66,8 +66,8 @@ export class InputLayer {
   // ----- 매 프레임 호출. 트래킹은 P.trackFps 로 다운샘플 (FR-03) -----
   update(now) {
     const out = [];
-    if (this.mouse) { // 포인터가 화면 안에 있는 동안 계속 빨아들인다 (가만히 있어도 OK)
-      this.mouse.radius = this.P.suckRadius; this.mouse.strength = 1; out.push(this.mouse);
+    if (this.mouse) { // 포인터가 화면 안에 있는 동안 손 역할
+      this.mouse.radius = this.P.handRadius; this.mouse.strength = 1; out.push(this.mouse);
     }
     if (this.state === 'granted' && this.hand && this.video.readyState >= 2 && now - this.lastTrack >= 1000 / this.P.trackFps) {
       const t0 = performance.now();
@@ -100,13 +100,13 @@ export class InputLayer {
       const prev = this.prevPalm.get(label);
       const vx = prev ? (px - prev.x) / dtSec : 0, vy = prev ? (py - prev.y) / dtSec : 0;
       this.prevPalm.set(label, { x: px, y: py });
-      // 펼침 정도 = 손가락 끝과 손목 거리 → 펼친 손은 넓게, 주먹은 좁고 세게 빨아들인다
+      // 펼침 정도 = 손가락 끝과 손목 거리 → 펼친 손은 넓고 부드럽게, 주먹은 좁고 세게 누른다
       const wrist = this.lmToWorld(lms[0]);
       let spread = 0; for (const k of [8, 12, 16, 20]) { const t = this.lmToWorld(lms[k]); spread += Math.hypot(t.x - wrist.x, t.y - wrist.y); }
       spread /= 4;
       const open = Math.min(1, Math.max(0, (spread - 0.6) / 0.9));
-      const R = this.P.suckRadius * (0.75 + 0.5 * open);
-      const inter = [{ source: 'hand', kind: 'suck', x: px, y: py, vx, vy, radius: R, strength: gate * (1.25 - 0.35 * open), open }];
+      const R = this.P.handRadius * (0.75 + 0.5 * open);
+      const inter = [{ source: 'hand', kind: 'hand', x: px, y: py, vx, vy, radius: R, strength: gate * (1.25 - 0.35 * open), open }];
       hands.push({ label, score, landmarks: lms, interactors: inter, open });
     });
     this.lastHands = hands;
